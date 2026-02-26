@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		EEBFD2F52F752B6200C09980 /* AppFeature in Frameworks */ = {isa = PBXBuildFile; productRef = EEBFD2F42F752B6200C09980 /* AppFeature */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		EEB19E172F4DD0CC002526DE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +31,7 @@
 		EEB19E092F4DD0CB002526DE /* DesignAtlas.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DesignAtlas.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EEB19E162F4DD0CC002526DE /* DesignAtlasTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DesignAtlasTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EEB19E202F4DD0CC002526DE /* DesignAtlasUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DesignAtlasUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		EEBFD2F22F75265C00C09980 /* Libraries */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Libraries; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -52,6 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EEBFD2F52F752B6200C09980 /* AppFeature in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,9 +81,11 @@
 		EEB19E002F4DD0CB002526DE = {
 			isa = PBXGroup;
 			children = (
+				EEBFD2F22F75265C00C09980 /* Libraries */,
 				EEB19E0B2F4DD0CB002526DE /* DesignAtlas */,
 				EEB19E192F4DD0CC002526DE /* DesignAtlasTests */,
 				EEB19E232F4DD0CC002526DE /* DesignAtlasUITests */,
+				EEBFD2F32F752B6200C09980 /* Frameworks */,
 				EEB19E0A2F4DD0CB002526DE /* Products */,
 			);
 			sourceTree = "<group>";
@@ -90,6 +98,13 @@
 				EEB19E202F4DD0CC002526DE /* DesignAtlasUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		EEBFD2F32F752B6200C09980 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -112,6 +127,7 @@
 			);
 			name = DesignAtlas;
 			packageProductDependencies = (
+				EEBFD2F42F752B6200C09980 /* AppFeature */,
 			);
 			productName = DesignAtlas;
 			productReference = EEB19E092F4DD0CB002526DE /* DesignAtlas.app */;
@@ -570,6 +586,13 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		EEBFD2F42F752B6200C09980 /* AppFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AppFeature;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = EEB19E012F4DD0CB002526DE /* Project object */;
 }
