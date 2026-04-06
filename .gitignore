@@ -3,7 +3,7 @@
 
 # Xcode user-specific state
 *.xcuserstate
-**/xcuserdata/
+DesignAtlas.xcodeproj/xcuserdata/
 
 # Build output
 DerivedData/
