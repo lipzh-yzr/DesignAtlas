@@ -25,10 +25,10 @@ let package = Package(
     dependencies: [
         // Centralizing third-party libraries
         .package(url: "https://github.com/hmlongco/Factory", exact: "2.5.3"),
-        .package(url: "https://github.com/pixiv/charcoal-ios.git", .upToNextMajor(from: "2.2.2")),
-        .package(url: "https://github.com/lipzh-yzr/MaterialUIKit.git", from: "2.0.2"),
-        .package(url: "https://github.com/SchweizerischeBundesbahnen/mobile-ios-design-swiftui.git", .upToNextMajor(from: "1.2.8")),
-        .package(url: "https://github.com/lipzh-yzr/Structura-design-system-swiftui.git", from: "0.1.0")
+        .package(url: "https://github.com/pixiv/charcoal-ios", .upToNextMajor(from: "2.2.2")),
+        .package(url: "https://github.com/lipzh-yzr/MaterialUIKit", from: "2.0.2"),
+        .package(url: "https://github.com/SchweizerischeBundesbahnen/mobile-ios-design-swiftui", .upToNextMajor(from: "1.2.8")),
+        .package(url: "https://github.com/lipzh-yzr/Structura-design-system-swiftui", from: "0.1.0")
     ],
     targets: targets
 )
@@ -40,7 +40,7 @@ var targets: [Target] {
         ),
         .target(
             name: "ExternalDependencies",
-            dependencies: [.factory],
+            dependencies: [.factory, .charcoal, .structuraDesignSystem],
             path: "Sources/Foundations/ExternalDependencies"
         ),
         .target(
@@ -59,7 +59,7 @@ var targets: [Target] {
         ),
         .target(
             name: "RepositoryService",
-            dependencies: ["ServiceInterface"],
+            dependencies: ["ServiceInterface", "Utils", "ExternalDependencies"],
             path: "Sources/Service/RepositoryService"
         ),
         .target(
@@ -110,7 +110,7 @@ var targets: [Target] {
         ),
         .target(
             name: "RatingFeature",
-            dependencies: ["CommonDefines"],
+            dependencies: ["CommonDefines", "RepositoryService"],
             path: "Sources/Features/RatingFeature"
         ),
         .testTarget(
