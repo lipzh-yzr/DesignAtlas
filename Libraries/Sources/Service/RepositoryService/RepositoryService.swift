@@ -14,7 +14,27 @@ public extension Container {
     var ratingRepositoryService: Factory<RatingRepositoryService> {
         self {
             RatingRepositoryServiceImpl()
+        }.onTest {
+            MockRatingRepositoryService()
+        }.onPreview {
+            MockRatingRepositoryService()
         }
+    }
+}
+
+final class MockRatingRepositoryService: RatingRepositoryService {
+    private var cache: [DesignSystem: DesignSystemRatingSubmission]
+
+    init(cache: [DesignSystem: DesignSystemRatingSubmission] = Self.initialCache) {
+        self.cache = cache
+    }
+
+    func ratingSubmission(for designSystem: CommonDefines.DesignSystem) -> CommonDefines.DesignSystemRatingSubmission? {
+        cache[designSystem]
+    }
+
+    func store(_ ratingSubmission: CommonDefines.DesignSystemRatingSubmission) {
+        cache[ratingSubmission.designSystem] = ratingSubmission
     }
 }
 
@@ -65,5 +85,34 @@ private extension DesignSystem {
         }
 
         return "DesignSystem.\(identifier).ratingSubmission"
+    }
+}
+
+private extension MockRatingRepositoryService {
+    static var initialCache: [DesignSystem: DesignSystemRatingSubmission] {
+        [
+            .charcoal: .init(
+                designSystem: .charcoal,
+                responses: [
+                    .init(dimension: .overallImpression, value: .rating(5)),
+                    .init(dimension: .consistency, value: .rating(4)),
+                    .init(dimension: .aesthetics, value: .rating(5)),
+                    .init(dimension: .componentCompleteness, value: .rating(3)),
+                    .init(dimension: .missingComponents, value: .openText("Date picker, empty state"))
+                ],
+                submittedAt: .distantPast
+            ),
+            .structura: .init(
+                designSystem: .structura,
+                responses: [
+                    .init(dimension: .overallImpression, value: .rating(4)),
+                    .init(dimension: .consistency, value: .rating(5)),
+                    .init(dimension: .aesthetics, value: .rating(4)),
+                    .init(dimension: .componentCompleteness, value: .rating(4)),
+                    .init(dimension: .missingComponents, value: .openText("Segmented control"))
+                ],
+                submittedAt: .distantPast
+            )
+        ]
     }
 }
