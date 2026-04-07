@@ -232,6 +232,20 @@ public enum DesignSystemRatingAnswerValue: Codable, Hashable, Sendable {
             try container.encode(text, forKey: .openText)
         }
     }
+    
+    public var rating: Int {
+        if case let .rating(int) = self {
+            return int
+        }
+        return 0
+    }
+    
+    public var textAnswer: String {
+        if case let .openText(string) = self {
+            return string
+        }
+        return ""
+    }
 }
 
 public struct DesignSystemRatingSubmission: Codable, Hashable, Sendable {
