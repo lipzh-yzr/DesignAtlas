@@ -38,9 +38,16 @@ public struct DesignSystemRatingQuestion: Codable, Hashable, Sendable {
         self.dimension = dimension
         self.isRequired = isRequired
     }
+
+    public var kind: DesignSystemRatingQuestionKind {
+        dimension.kind
+    }
     
     public func accepts(_ answer: DesignSystemRatingAnswerValue?) -> Bool {
-        guard isRequired != (answer == nil) else { return false }
+        guard let answer else {
+            return !isRequired
+        }
+
         switch (dimension.kind, answer) {
         case let (.rating(scale), .rating(score)):
             return scale.contains(score)
@@ -58,6 +65,21 @@ public enum DesignSystemRatingDimension: String, CaseIterable, Codable, Hashable
     case aesthetics
     case componentCompleteness
     case missingComponents
+
+    public var title: String {
+        switch self {
+        case .overallImpression:
+            "How is your overall impression of this design system?"
+        case .consistency:
+            "How consistent is this design system?"
+        case .aesthetics:
+            "How visually appealing is this design system?"
+        case .componentCompleteness:
+            "How complete is this design system's component coverage?"
+        case .missingComponents:
+            "Which components are missing from this design system?"
+        }
+    }
     
     var kind: DesignSystemRatingQuestionKind {
         switch self {
@@ -70,7 +92,7 @@ public enum DesignSystemRatingDimension: String, CaseIterable, Codable, Hashable
         case .componentCompleteness:
             .rating(.fivePoint)
         case .missingComponents:
-                .openText(.init(placeholder: "例如：空状态、分段控制器、日期范围选择器等"))
+            .openText(.init(placeholder: "例如：空状态、分段控制器、日期范围选择器等"))
         }
     }
 }

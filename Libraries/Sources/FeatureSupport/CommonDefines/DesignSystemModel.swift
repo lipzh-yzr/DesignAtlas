@@ -14,7 +14,7 @@ public enum DesignSystem: Codable, Hashable, Sendable {
     case charcoal
     case structura
     
-    var title: String {
+    public var title: String {
         switch self {
         case .charcoal:
             "Charcoal"
@@ -23,7 +23,7 @@ public enum DesignSystem: Codable, Hashable, Sendable {
         }
     }
     
-    var author: String {
+    public var author: String {
         switch self {
         case .charcoal:
             "pixiv"
@@ -32,7 +32,7 @@ public enum DesignSystem: Codable, Hashable, Sendable {
         }
     }
     
-    var brandColor: SwiftUI.Color {
+    public var brandColor: SwiftUI.Color {
         switch self {
         case .charcoal:
             return Color(

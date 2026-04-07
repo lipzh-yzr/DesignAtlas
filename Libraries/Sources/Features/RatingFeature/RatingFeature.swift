@@ -6,57 +6,92 @@
 //
 
 import CommonDefines
-import SwiftUI
 import Observation
 import Factory
 import RepositoryService
 
 @Observable
 class RatingViewModel {
+    @Observable
+    class SurveyEntry: Identifiable {
+        let question: DesignSystemRatingQuestion
+        var value: DesignSystemRatingAnswerValue?
+
+        var id: DesignSystemRatingDimension {
+            question.dimension
+        }
+        
+        var dimension: DesignSystemRatingDimension {
+            question.dimension
+        }
+        
+        init(
+            question: DesignSystemRatingQuestion,
+            value: DesignSystemRatingAnswerValue? = nil
+        ) {
+            self.question = question
+            self.value = value
+        }
+    }
+
     enum SubmitError: Error {
         case invalidResponse(dimension: DesignSystemRatingDimension)
     }
     /// 目前的答案
-    var currentResponses: [DesignSystemRatingResponse]
     let designSystem: DesignSystem
-    let survey: DesignSystemRatingSurvey
     @Injected(\.ratingRepositoryService) private var ratingRepositoryService
+    var presentingToast = false {
+        didSet {
+            if !presentingToast {
+                error = nil
+            }
+        }
+    }
+    var error: SubmitError? = nil
     
     init(
         currentSubmission: DesignSystemRatingSubmission? = nil,
         designSystem: DesignSystem
     ) {
-        self.currentResponses = currentSubmission?.responses ?? DesignSystemRatingDimension.allCases
-            .map({
-                DesignSystemRatingResponse(dimension: $0)
-            })
         self.designSystem = designSystem
-        self.survey = .init(designSystem: designSystem)
+        let survey = DesignSystemRatingSurvey(designSystem: designSystem)
+        self.surveyEntries = Self.normalizedResponses(
+            from: currentSubmission?.responses,
+            survey: survey
+        )
     }
+
+    var surveyEntries: [SurveyEntry]
     
-    func update(
-        response: DesignSystemRatingAnswerValue?,
-        for dimension: DesignSystemRatingDimension
-    ) {
-        guard let index = currentResponses.firstIndex(where: {
-            $0.dimension == dimension
-        }) else { return }
-        currentResponses[index].value = response
-    }
-    
-    func submitIfPossible() throws(SubmitError) {
-        var shouldAccept = true
-        for (i, question) in survey.questions.enumerated() {
-            let response = currentResponses[i]
-            if question.accepts(response.value) {
-                throw .invalidResponse(dimension: response.dimension)
+    func submitIfPossible() {
+        for entry in surveyEntries {
+            if !entry.question.accepts(entry.value) {
+                presentingToast = true
+                error = .invalidResponse(dimension: entry.dimension)
             }
         }
         
+        let responses: [DesignSystemRatingResponse] = surveyEntries.map {
+            .init(dimension: $0.dimension, value: $0.value)
+        }
         let submission = DesignSystemRatingSubmission(
             designSystem: designSystem,
-            responses: currentResponses
+            responses: responses
         )
         ratingRepositoryService.store(submission)
+    }
+
+    private static func normalizedResponses(
+        from responses: [DesignSystemRatingResponse]?,
+        survey: DesignSystemRatingSurvey
+    ) -> [SurveyEntry] {
+        survey.questions.map { question in
+            let responseVal = responses?.first(where: { $0.dimension == question.dimension })?.value ?? nil
+            return .init(question: question, value: responseVal)
+        }
+    }
+    
+    var navigationTitle: String {
+        "Survey - \(designSystem.title)"
     }
 }
