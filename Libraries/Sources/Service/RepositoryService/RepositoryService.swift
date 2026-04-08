@@ -14,8 +14,6 @@ public extension Container {
     var ratingRepositoryService: Factory<RatingRepositoryService> {
         self {
             RatingRepositoryServiceImpl()
-        }.onTest {
-            MockRatingRepositoryService()
         }.onPreview {
             MockRatingRepositoryService()
         }
@@ -25,7 +23,9 @@ public extension Container {
 final class MockRatingRepositoryService: RatingRepositoryService {
     private var cache: [DesignSystem: DesignSystemRatingSubmission]
 
-    init(cache: [DesignSystem: DesignSystemRatingSubmission] = Self.initialCache) {
+    init(
+        cache: [DesignSystem: DesignSystemRatingSubmission] = MockRatingRepository.initialCache
+    ) {
         self.cache = cache
     }
 
@@ -88,7 +88,7 @@ private extension DesignSystem {
     }
 }
 
-private extension MockRatingRepositoryService {
+private enum MockRatingRepository {
     static var initialCache: [DesignSystem: DesignSystemRatingSubmission] {
         [
             .charcoal: .init(

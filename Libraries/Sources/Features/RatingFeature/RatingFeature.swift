@@ -68,6 +68,7 @@ class RatingViewModel {
             if !entry.question.accepts(entry.value) {
                 presentingToast = true
                 error = .invalidResponse(dimension: entry.dimension)
+                return
             }
         }
         
