@@ -28,7 +28,7 @@ let package = Package(
         .package(url: "https://github.com/pixiv/charcoal-ios", .upToNextMajor(from: "2.2.2")),
         .package(url: "https://github.com/lipzh-yzr/MaterialUIKit", from: "2.0.2"),
         .package(url: "https://github.com/SchweizerischeBundesbahnen/mobile-ios-design-swiftui", .upToNextMajor(from: "1.2.8")),
-        .package(url: "https://github.com/lipzh-yzr/Structura-design-system-swiftui", from: "0.1.0")
+        .package(url: "https://github.com/lipzh-yzr/Structura-design-system-swiftui", from: "0.1.1")
     ],
     targets: targets
 )
@@ -115,7 +115,13 @@ var targets: [Target] {
         ),
         .testTarget(
             name: "RatingFeatureTests",
-            dependencies: ["RatingFeature"]
+            dependencies: [
+                "RatingFeature",
+                "RepositoryService",
+                "ServiceInterface",
+                .factory,
+                .product(name: "FactoryTesting", package: "Factory")
+            ]
         ),
     ]
 }

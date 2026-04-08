@@ -1,5 +1,5 @@
 {
-  "originHash" : "94fa90b61835a59f14419e9f8dc8b453eb76e5cb91bc6ed6c24c211d217c96ec",
+  "originHash" : "23a4f1c8b7c9d19f3b5b8bbf16cadc137879244a59589a4e65dda0dde897bc75",
   "pins" : [
     {
       "identity" : "charcoal-ios",
@@ -42,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/lipzh-yzr/Structura-design-system-swiftui.git",
       "state" : {
-        "revision" : "df50e5b5373600cf3bcb03997e39fd0356b13d03",
-        "version" : "0.1.0"
+        "revision" : "178f7f87b5433aed7faef760fe1ba93fefeec010",
+        "version" : "0.1.1"
       }
     }
   ],
