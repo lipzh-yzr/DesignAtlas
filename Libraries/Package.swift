@@ -12,7 +12,6 @@ let package = Package(
         .library("ExternalDependencies"),
         .library("Utils"),
         .library("CommonDefines"),
-        .library("ServiceInterface"),
         .library("RepositoryService"),
         .library("SystemShowcase"),
         .library("AppFeature"),
@@ -54,13 +53,8 @@ var targets: [Target] {
             path: "Sources/FeatureSupport/CommonDefines"
         ),
         .target(
-            name: "ServiceInterface",
-            dependencies: ["CommonDefines"],
-            path: "Sources/Service/ServiceInterface"
-        ),
-        .target(
             name: "RepositoryService",
-            dependencies: ["ServiceInterface", "Utils", "ExternalDependencies"],
+            dependencies: ["Utils", "ExternalDependencies"],
             path: "Sources/Service/RepositoryService"
         ),
         .target(
@@ -121,7 +115,6 @@ var targets: [Target] {
             dependencies: [
                 "RatingFeature",
                 "RepositoryService",
-                "ServiceInterface",
                 .factory,
                 .product(name: "FactoryTesting", package: "Factory")
             ]

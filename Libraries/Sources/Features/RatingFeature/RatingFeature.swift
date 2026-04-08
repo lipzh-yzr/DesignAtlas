@@ -10,6 +10,7 @@ import Observation
 import Factory
 import RepositoryService
 
+@MainActor
 @Observable
 class RatingViewModel {
     @Observable
@@ -51,7 +52,7 @@ class RatingViewModel {
     
     init(
         designSystem: DesignSystem,
-        isFresh: Bool
+        isFresh: Bool = true
     ) {
         self.designSystem = designSystem
         let submission = isFresh ? nil : ratingRepositoryService.ratingSubmission(

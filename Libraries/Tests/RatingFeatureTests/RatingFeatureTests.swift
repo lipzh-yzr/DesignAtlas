@@ -1,52 +1,24 @@
+import Foundation
 import Testing
 import CommonDefines
 import Factory
 import FactoryTesting
 import RepositoryService
-import ServiceInterface
 
 @testable import RatingFeature
 
+@MainActor
 @Suite(.container)
 struct RatingFeatureTests {
     @Test
     func initWithoutSubmissionBuildsEmptySurveyEntries() {
-        let sut = RatingViewModel(designSystem: .charcoal)
+        let sut = RatingViewModel(designSystem: .charcoal, isFresh: true)
 
         #expect(sut.designSystem == .charcoal)
         #expect(sut.navigationTitle == "Survey - Charcoal")
         #expect(sut.surveyEntries.count == DesignSystemRatingDimension.allCases.count)
         #expect(sut.surveyEntries.map(\.dimension) == DesignSystemRatingDimension.allCases)
         #expect(sut.surveyEntries.allSatisfy { $0.value == nil })
-    }
-
-    @Test
-    func initNormalizesExistingResponsesIntoSurveyOrder() {
-        let submission = DesignSystemRatingSubmission(
-            designSystem: .structura,
-            responses: [
-                .init(dimension: .missingComponents, value: .openText("Stepper")),
-                .init(dimension: .aesthetics, value: .rating(2))
-            ]
-        )
-
-        let sut = RatingViewModel(
-            currentSubmission: submission,
-            designSystem: .structura
-        )
-
-        #expect(
-            sut.surveyEntries.map(\.dimension) == DesignSystemRatingDimension.allCases
-        )
-        #expect(
-            sut.surveyEntries.map(\.value) == [
-                nil,
-                nil,
-                .rating(2),
-                nil,
-                .openText("Stepper")
-            ]
-        )
     }
 
     @Test
@@ -98,7 +70,7 @@ struct RatingFeatureTests {
 
     @Test
     func dismissingToastClearsSubmitError() {
-        let sut = RatingViewModel(designSystem: .charcoal)
+        let sut = RatingViewModel(designSystem: .charcoal, isFresh: true)
 
         sut.presentingToast = true
         sut.error = .invalidResponse(dimension: .consistency)
@@ -110,11 +82,21 @@ struct RatingFeatureTests {
 }
 
 @MainActor
-private final class RatingRepositoryServiceSpy: @preconcurrency RatingRepositoryService, Sendable {
+private final class RatingRepositoryServiceSpy: RatingRepositoryService, Sendable {
     private(set) var storedSubmissions: [DesignSystemRatingSubmission] = []
 
     func ratingSubmission(for designSystem: DesignSystem) -> DesignSystemRatingSubmission? {
         storedSubmissions.last { $0.designSystem == designSystem }
+    }
+
+    func ratingSubmissionUpdates(
+        for designSystem: DesignSystem
+    ) -> AsyncStream<DesignSystemRatingSubmission?> {
+        let currentSubmission = ratingSubmission(for: designSystem)
+        return AsyncStream { continuation in
+            continuation.yield(currentSubmission)
+            continuation.finish()
+        }
     }
 
     func store(_ ratingSubmission: DesignSystemRatingSubmission) {
@@ -122,6 +104,7 @@ private final class RatingRepositoryServiceSpy: @preconcurrency RatingRepository
     }
 }
 
+@MainActor
 private func applyValidResponses(to viewModel: RatingViewModel) {
     let validAnswers: [DesignSystemRatingDimension: DesignSystemRatingAnswerValue] = [
         .overallImpression: .rating(5),

@@ -8,6 +8,7 @@
 import SwiftUI
 import CommonDefines
 
+@MainActor
 public struct RatingView: View {
     @State private var viewModel: RatingViewModel
 

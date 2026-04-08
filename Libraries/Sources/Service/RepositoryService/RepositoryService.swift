@@ -7,21 +7,26 @@
 
 import CommonDefines
 import Foundation
-import ServiceInterface
 import Factory
 
 public extension Container {
+    @MainActor
     var ratingRepositoryService: Factory<RatingRepositoryService> {
         self {
             RatingRepositoryServiceImpl()
-        }.onPreview {
+        }
+        .singleton
+        .onPreview {
             MockRatingRepositoryService()
         }
     }
 }
 
+@preconcurrency
+@MainActor
 final class MockRatingRepositoryService: RatingRepositoryService {
     private var cache: [DesignSystem: DesignSystemRatingSubmission]
+    fileprivate var continuations = [DesignSystem: [UUID: RatingSubmissionContinuation]]()
 
     init(
         cache: [DesignSystem: DesignSystemRatingSubmission] = MockRatingRepository.initialCache
@@ -33,15 +38,26 @@ final class MockRatingRepositoryService: RatingRepositoryService {
         cache[designSystem]
     }
 
+    func ratingSubmissionUpdates(
+        for designSystem: CommonDefines.DesignSystem
+    ) -> AsyncStream<CommonDefines.DesignSystemRatingSubmission?> {
+        makeRatingSubmissionStream(for: designSystem)
+    }
+
     func store(_ ratingSubmission: CommonDefines.DesignSystemRatingSubmission) {
         cache[ratingSubmission.designSystem] = ratingSubmission
+        yield(ratingSubmission, for: ratingSubmission.designSystem)
     }
 }
 
+@preconcurrency
+@MainActor
 final class RatingRepositoryServiceImpl: RatingRepositoryService {
     private let userDefaults: UserDefaults
     private let encoder: JSONEncoder
     private let decoder: JSONDecoder
+    private var cache = [DesignSystem: DesignSystemRatingSubmission]()
+    fileprivate var continuations = [DesignSystem: [UUID: RatingSubmissionContinuation]]()
 
     init(
         userDefaults: UserDefaults = .standard,
@@ -54,26 +70,92 @@ final class RatingRepositoryServiceImpl: RatingRepositoryService {
     }
 
     func ratingSubmission(for designSystem: DesignSystem) -> DesignSystemRatingSubmission? {
-        guard let data = userDefaults.data(forKey: designSystem.ratingSubmissionStorageKey) else {
+        if let submission = cache[designSystem] {
+            return submission
+        }
+
+        guard let data = userDefaults.data(
+            forKey: designSystem.ratingSubmissionStorageKey
+        ) else {
             return nil
         }
 
-        guard let submission = try? decoder.decode(DesignSystemRatingSubmission.self, from: data) else {
+        guard let submission = try? decoder.decode(
+            DesignSystemRatingSubmission.self,
+            from: data
+        ) else {
             userDefaults.removeObject(forKey: designSystem.ratingSubmissionStorageKey)
             return nil
         }
 
+        cache[designSystem] = submission
         return submission
     }
 
+    func ratingSubmissionUpdates(
+        for designSystem: DesignSystem
+    ) -> AsyncStream<DesignSystemRatingSubmission?> {
+        makeRatingSubmissionStream(for: designSystem)
+    }
+
     func store(_ ratingSubmission: DesignSystemRatingSubmission) {
-        guard let data = try? encoder.encode(ratingSubmission) else {
-            return
+        cache[ratingSubmission.designSystem] = ratingSubmission
+
+        if let data = try? encoder.encode(ratingSubmission) {
+            userDefaults.set(
+                data,
+                forKey: ratingSubmission.designSystem.ratingSubmissionStorageKey
+            )
         }
 
-        userDefaults.set(data, forKey: ratingSubmission.designSystem.ratingSubmissionStorageKey)
+        yield(ratingSubmission, for: ratingSubmission.designSystem)
     }
 }
+
+private typealias RatingSubmissionContinuation =
+    AsyncStream<DesignSystemRatingSubmission?>.Continuation
+
+@MainActor
+private protocol RatingSubmissionStreaming: AnyObject, Sendable {
+    var continuations: [DesignSystem: [UUID: RatingSubmissionContinuation]] { get set }
+    func ratingSubmission(for designSystem: DesignSystem) -> DesignSystemRatingSubmission?
+}
+
+@MainActor
+private extension RatingSubmissionStreaming {
+    func makeRatingSubmissionStream(
+        for designSystem: DesignSystem
+    ) -> AsyncStream<DesignSystemRatingSubmission?> {
+        AsyncStream(bufferingPolicy: .bufferingNewest(1)) { continuation in
+            let id = UUID()
+            let currentSubmission = ratingSubmission(for: designSystem)
+            continuations[designSystem, default: [:]][id] = continuation
+
+            continuation.yield(currentSubmission)
+            continuation.onTermination = { [weak self] _ in
+                Task { @MainActor in
+                    self?.continuations[designSystem]?[id] = nil
+                    if self?.continuations[designSystem]?.isEmpty == true {
+                        self?.continuations[designSystem] = nil
+                    }
+                }
+            }
+        }
+    }
+
+    func yield(
+        _ ratingSubmission: DesignSystemRatingSubmission,
+        for designSystem: DesignSystem
+    ) {
+        let currentContinuations = Array(continuations[designSystem, default: [:]].values)
+        for continuation in currentContinuations {
+            continuation.yield(ratingSubmission)
+        }
+    }
+}
+
+extension MockRatingRepositoryService: RatingSubmissionStreaming {}
+extension RatingRepositoryServiceImpl: RatingSubmissionStreaming {}
 
 private extension DesignSystem {
     var ratingSubmissionStorageKey: String {
