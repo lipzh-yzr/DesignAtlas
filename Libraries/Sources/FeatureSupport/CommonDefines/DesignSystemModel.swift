@@ -10,7 +10,7 @@ import SwiftUI
 import CharcoalSwiftUI
 import StructuraSwiftUI
 
-public enum DesignSystem: Codable, Hashable, Sendable {
+public enum DesignSystem: Codable, Hashable, Sendable, CaseIterable {
     case charcoal
     case structura
     

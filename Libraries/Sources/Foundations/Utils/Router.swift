@@ -9,21 +9,26 @@ import SwiftUI
 
 @MainActor
 @Observable
-final class Router<Route: Hashable> {
-    var routes: [Route] = []
-    func push(_ route: Route) {
+public final class Router<Route: Hashable> {
+    var routes: [Route]
+    
+    public init(routes: [Route] = []) {
+        self.routes = routes
+    }
+    
+    public func push(_ route: Route) {
         routes.append(route)
     }
     
-    func pop() {
+    public func pop() {
         _ = routes.popLast()
     }
     
-    func popToRoot() {
+    public func popToRoot() {
         routes.removeAll()
     }
     
-    func setPath(_ path: [Route]) {
+    public func setPath(_ path: [Route]) {
         routes = path
     }
 }

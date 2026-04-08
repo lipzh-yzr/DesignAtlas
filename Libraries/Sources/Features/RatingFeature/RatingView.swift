@@ -11,8 +11,13 @@ import CommonDefines
 public struct RatingView: View {
     @State private var viewModel: RatingViewModel
 
-    public init(with designSystem: DesignSystem) {
-        _viewModel = State(initialValue: .init(designSystem: designSystem))
+    public init(
+        designSystem: DesignSystem,
+        isFresh: Bool
+    ) {
+        _viewModel = State(
+            initialValue: .init(designSystem: designSystem, isFresh: isFresh)
+        )
     }
     
     public var body: some View {

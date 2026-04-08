@@ -50,6 +50,7 @@ var targets: [Target] {
         ),
         .target(
             name: "CommonDefines",
+            dependencies: ["Utils"],
             path: "Sources/FeatureSupport/CommonDefines"
         ),
         .target(
@@ -69,7 +70,9 @@ var targets: [Target] {
         .target(
             name: "AppFeature",
             dependencies: ["ExternalDependencies",
-                           "Utils"],
+                           "Utils",
+                          "SystemShowcase",
+                          "RatingFeature"],
             path: "Sources/Features/AppFeature"
         ),
         .target(

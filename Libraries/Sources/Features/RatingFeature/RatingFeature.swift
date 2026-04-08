@@ -50,13 +50,16 @@ class RatingViewModel {
     var error: SubmitError? = nil
     
     init(
-        currentSubmission: DesignSystemRatingSubmission? = nil,
-        designSystem: DesignSystem
+        designSystem: DesignSystem,
+        isFresh: Bool
     ) {
         self.designSystem = designSystem
+        let submission = isFresh ? nil : ratingRepositoryService.ratingSubmission(
+            for: designSystem
+        )
         let survey = DesignSystemRatingSurvey(designSystem: designSystem)
         self.surveyEntries = Self.normalizedResponses(
-            from: currentSubmission?.responses,
+            from: submission?.responses,
             survey: survey
         )
     }
