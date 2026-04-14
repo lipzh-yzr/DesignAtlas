@@ -10,9 +10,9 @@ import SwiftUI
 import CharcoalSwiftUI
 import StructuraSwiftUI
 
-public enum DesignSystem: Codable, Hashable, Sendable, CaseIterable {
-    case charcoal
-    case structura
+public enum DesignSystem: Int, Codable, Hashable, Sendable, CaseIterable {
+    case charcoal = 0
+    case structura = 1
     
     public var title: String {
         switch self {

@@ -248,7 +248,11 @@ public enum DesignSystemRatingAnswerValue: Codable, Hashable, Sendable {
     }
 }
 
-public struct DesignSystemRatingSubmission: Codable, Hashable, Sendable {
+public struct DesignSystemRatingSubmission: Codable, Hashable, Sendable, Identifiable {
+    public var id: DesignSystem {
+        designSystem
+    }
+
     public let designSystem: DesignSystem
     public var responses: [DesignSystemRatingResponse]
     public var submittedAt: Date
@@ -261,5 +265,19 @@ public struct DesignSystemRatingSubmission: Codable, Hashable, Sendable {
         self.designSystem = designSystem
         self.responses = responses
         self.submittedAt = submittedAt
+    }
+    
+    public var isEmpty: Bool {
+        responses.isEmpty
+    }
+    
+    public var generalScore: Int {
+        var score: Int?
+        for response in responses {
+            if case .overallImpression = response.dimension {
+                score = response.value?.rating
+            }
+        }
+        return score ?? 0
     }
 }
