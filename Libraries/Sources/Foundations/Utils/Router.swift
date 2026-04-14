@@ -10,7 +10,7 @@ import SwiftUI
 @MainActor
 @Observable
 public final class Router<Route: Hashable> {
-    var routes: [Route]
+    public var routes: [Route]
     
     public init(routes: [Route] = []) {
         self.routes = routes

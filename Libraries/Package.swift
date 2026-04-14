@@ -27,10 +27,14 @@ let package = Package(
         .package(url: "https://github.com/pixiv/charcoal-ios", .upToNextMajor(from: "2.2.2")),
         .package(url: "https://github.com/lipzh-yzr/MaterialUIKit", from: "2.0.2"),
         .package(url: "https://github.com/SchweizerischeBundesbahnen/mobile-ios-design-swiftui", .upToNextMajor(from: "1.2.8")),
-        .package(url: "https://github.com/lipzh-yzr/Structura-design-system-swiftui", from: "0.1.1")
+        .package(url: "https://github.com/lipzh-yzr/Structura-design-system-swiftui", from: "0.1.2")
     ],
     targets: targets
 )
+
+let featureSwiftSettings: [SwiftSetting] = [
+    .defaultIsolation(MainActor.self)
+]
 
 var targets: [Target] {
     [
@@ -59,21 +63,32 @@ var targets: [Target] {
         ),
         .target(
             name: "SystemShowcase",
-            path: "Sources/Features/SystemShowcase"
+            dependencies: [
+                "CommonDefines",
+                "RepositoryService",
+                "CharcoalUI",
+                "StructuraUI"
+            ],
+            path: "Sources/Features/SystemShowcase",
+            swiftSettings: featureSwiftSettings
         ),
         .target(
             name: "AppFeature",
-            dependencies: ["ExternalDependencies",
-                           "Utils",
-                          "SystemShowcase",
-                          "RatingFeature"],
-            path: "Sources/Features/AppFeature"
+            dependencies: [
+                "ExternalDependencies",
+                "Utils",
+                "SystemShowcase",
+                "RatingFeature",
+            ],
+            path: "Sources/Features/AppFeature",
+            swiftSettings: featureSwiftSettings
         ),
         .target(
             name: "CharcoalUI",
             dependencies: [.charcoal,
                            "Utils"],
-            path: "Sources/Features/CharcoalUI"
+            path: "Sources/Features/CharcoalUI",
+            swiftSettings: featureSwiftSettings
         ),
         .testTarget(
             name: "CharcoalUITests",
@@ -83,7 +98,8 @@ var targets: [Target] {
             name: "MaterialUI",
             dependencies: [.materialUIKit,
                            "Utils"],
-            path: "Sources/Features/MaterialUI"
+            path: "Sources/Features/MaterialUI",
+            swiftSettings: featureSwiftSettings
         ),
         .testTarget(
             name: "MaterialUITests",
@@ -93,7 +109,8 @@ var targets: [Target] {
             name: "SBBUI",
             dependencies: [.sbbDesignSystem,
                            "Utils"],
-            path: "Sources/Features/SBBUI"
+            path: "Sources/Features/SBBUI",
+            swiftSettings: featureSwiftSettings
         ),
         .testTarget(
             name: "SBBUITests",
@@ -103,12 +120,14 @@ var targets: [Target] {
             name: "StructuraUI",
             dependencies: [.structuraDesignSystem,
                            "Utils"],
-            path: "Sources/Features/StructuraUI"
+            path: "Sources/Features/StructuraUI",
+            swiftSettings: featureSwiftSettings
         ),
         .target(
             name: "RatingFeature",
             dependencies: ["CommonDefines", "RepositoryService"],
-            path: "Sources/Features/RatingFeature"
+            path: "Sources/Features/RatingFeature",
+            swiftSettings: featureSwiftSettings
         ),
         .testTarget(
             name: "RatingFeatureTests",
