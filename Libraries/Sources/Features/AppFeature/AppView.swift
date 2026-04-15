@@ -7,8 +7,9 @@
 
 import SwiftUI
 
-struct AppView: View {
-    var body: some View {
+public struct AppView: View {
+    public init() {}
+    public var body: some View {
         TabView {
             Tab("Gallery", systemImage: "magnifyingglass") {
                 GalleryView()
