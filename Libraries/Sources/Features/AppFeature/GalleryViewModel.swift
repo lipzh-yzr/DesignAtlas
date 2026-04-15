@@ -14,9 +14,9 @@ import Utils
 @MainActor
 @Observable
 final class GalleryViewModel {
-    @Injected(\.ratingRepositoryService) var ratingRepositoryService
+    @Injected(\.ratingRepositoryService) @ObservationIgnored var ratingRepositoryService
     let designSystems: [DesignSystem]
-    var designSystemRatings: [DesignSystemRatingSubmission]
+    var designSystemRatings: [DesignSystemRatingSubmission] = []
     @ObservationIgnored private var submissionTasks: [Task<Void, Never>] = []
     var galleryRouter: Router<GalleryRoute> = .init()
     

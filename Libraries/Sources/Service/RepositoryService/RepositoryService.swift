@@ -5,9 +5,9 @@
 //  Created by wepie on 2026/4/5.
 //
 
-import CommonDefines
 import Foundation
 import Factory
+import CommonDefines
 
 public extension Container {
     @MainActor

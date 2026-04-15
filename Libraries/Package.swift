@@ -58,7 +58,11 @@ var targets: [Target] {
         ),
         .target(
             name: "RepositoryService",
-            dependencies: ["Utils", "ExternalDependencies"],
+            dependencies: [
+                "Utils",
+                "ExternalDependencies",
+                "CommonDefines"
+            ],
             path: "Sources/Service/RepositoryService"
         ),
         .target(

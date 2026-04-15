@@ -16,7 +16,7 @@ import Utils
 class SystemShowcaseViewModel {
     let designSystem: DesignSystem
     
-    @Injected(\.ratingRepositoryService) var ratingRepositoryService
+    @Injected(\.ratingRepositoryService) @ObservationIgnored var ratingRepositoryService
     @ObservationIgnored private var submissionTask: Task<Void, Never>?
     
     var submission: DesignSystemRatingSubmission?

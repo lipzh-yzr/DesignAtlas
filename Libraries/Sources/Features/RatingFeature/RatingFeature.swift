@@ -40,7 +40,7 @@ class RatingViewModel {
     }
     /// 目前的答案
     let designSystem: DesignSystem
-    @Injected(\.ratingRepositoryService) private var ratingRepositoryService
+    @Injected(\.ratingRepositoryService) @ObservationIgnored private var ratingRepositoryService
     var presentingToast = false {
         didSet {
             if !presentingToast {
@@ -65,7 +65,7 @@ class RatingViewModel {
         )
     }
 
-    var surveyEntries: [SurveyEntry]
+    var surveyEntries: [SurveyEntry] = []
     
     func submitIfPossible() {
         for entry in surveyEntries {
